@@ -76,7 +76,7 @@ maze_dim_y = len(walls)*wall_segment_length
 
 # Graphics information
 frame_rate = 60             # Target frame rate (Hz)
-ppi = 12                    # Number of on-screen pixels per inch on display
+ppi = 8                    # Number of on-screen pixels per inch on display
 border_pixels = floor_segment_length * ppi  # Size of the border surrounding the maze area
 
 background_color = (43, 122, 120)
@@ -145,8 +145,8 @@ w0_info = {
     'ang_velocity': 0,
     'motors': [motors['m0'], motors['m1']],
     'motor_direction': [1, 1],
-    'bias': {'x': 0, 'y': 0, 'rotation': 0},
-    'error': {'x': 0, 'y': 0, 'rotation': 0}
+    'bias': {'x': 0, 'y': 0, 'rotation': 0.2},
+    #'error': {'x': 0, 'y': 0, 'rotation': 0}
 }
 
 # d0_info = {
@@ -173,8 +173,8 @@ r0_info = {
     #'motors': [motors['m0'], motors['m1'], motors['m2'], motors['m3']],
     #'motor_direction': [1, -1, 1, -1],
     'motor_direction': [1, -1],
-    'bias': {'x': 0, 'y': 0, 'rotation': 0},
-    'error': {'x': 0, 'y': 0, 'rotation': 0}
+    'bias': {'x': 0, 'y': 0, 'rotation': 0.02},
+    #'error': {'x': 0, 'y': 0, 'rotation': 0}
 }
 
 drives = {
