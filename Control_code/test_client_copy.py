@@ -239,7 +239,7 @@ else:
 
 
 ############## Main section for the communication client ##############
-RUN_COMMUNICATION_CLIENT = True # If true, run this. If false, skip it
+RUN_COMMUNICATION_CLIENT = False # If true, run this. If false, skip it
 while RUN_COMMUNICATION_CLIENT:
     # Input a command
     cmd = input('Type in a string to send: ')
@@ -263,9 +263,10 @@ while RUN_COMMUNICATION_CLIENT:
 # The sequence of commands to run
 CMD_SEQUENCE = ['w0:36', 'r0:90', 'w0:36', 'r0:90', 'w0:12', 'r0:-90', 'w0:24', 'r0:-90', 'w0:6', 'r0:720']
 LOOP_PAUSE_TIME = 1 # seconds
+#LOOP_PAUSE_TIME = 0.25 # seconds
 
 # Main loop
-RUN_DEAD_RECKONING = False # If true, run this. If false, skip it
+RUN_DEAD_RECKONING = True # If true, run this. If false, skip it
 ct = 0
 while RUN_DEAD_RECKONING:
     # Pause for a little while so as to not spam commands insanely fast
@@ -279,14 +280,48 @@ while RUN_DEAD_RECKONING:
         if packet_tx:
             transmit(packet_tx)
             [responses, time_rx] = receive()
+            print(responses[0][1])
+            distance_u0 = float(responses[0][1])
             print(f"Ultrasonic 0 reading: {response_string('u0',responses)}")
-
+            if distance_u0  <= 2:
+                print("Obstacle detected by u0! Stopping the rover.")
+                break # Stop the loop if an obstacle is detected
+            
         # Check an ultrasonic sensor 'u1'
         packet_tx = packetize('u1')
         if packet_tx:
             transmit(packet_tx)
             [responses, time_rx] = receive()
+            print(responses[0][1])
+            distance_u1 = float(responses[0][1])
             print(f"Ultrasonic 1 reading: {response_string('u1',responses)}")
+            if distance_u1 <= 2:
+                print("Obstacle detected by u1! Stopping the rover.")
+                break
+
+        # Check an ultrasonic sensor 'u2'
+        packet_tx = packetize('u2')
+        if packet_tx:
+            transmit(packet_tx)
+            [responses, time_rx] = receive()
+            print(responses[0][1])
+            distance_u2 = float(responses[0][1])
+            print(f"Ultrasonic 2 reading: {response_string('u2',responses)}")
+            if distance_u2 <= 2:
+                print("Obstacle detected by u2! Stopping the rover.")
+                break
+            
+        # Check an ultrasonic sensor 'u3'
+        packet_tx = packetize('u3')
+        if packet_tx:
+            transmit(packet_tx)
+            [responses, time_rx] = receive()
+            print(responses[0][1])
+            distance_u3 = float(responses[0][1]) 
+            print(f"Ultrasonic 3 reading: {response_string('u3',responses)}")
+            if distance_u3 <= 2:
+                print("Obstacle detected by u3! Stopping the rover.")
+                break
 
         # Check the remaining three sensors: gyroscope, compass, and IR
         packet_tx = packetize('g0,c0,i0')
