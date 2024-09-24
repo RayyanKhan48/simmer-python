@@ -16,7 +16,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
-#
+
 # Basic client for sending and receiving data to SimMeR or a robot, for testing purposes
 # Some code modified from examples on https://realpython.com/python-sockets/
 # and https://www.geeksforgeeks.org/python-display-text-to-pygame-window/
@@ -172,7 +172,7 @@ def response_string(cmds: str, responses_list: list):
     for item in zip(cmd_list, responses_list, valid):
         if item[2]:
             sgn = '='
-            chk = '✓'
+            chk = 'âœ“'
         else:
             sgn = '!='
             chk = 'X'
@@ -237,115 +237,60 @@ else:
 
 
 
-
-############## Main section for the communication client ##############
-RUN_COMMUNICATION_CLIENT = False # If true, run this. If false, skip it
-while RUN_COMMUNICATION_CLIENT:
-    # Input a command
-    cmd = input('Type in a string to send: ')
-
-    # Send the command
-    packet_tx = packetize(cmd)
-    if packet_tx:
-        transmit(packet_tx)
-
-    # Receive the response
-    [responses, time_rx] = receive()
-    if responses[0]:
-        print(f"At time '{time_rx}' received from {SOURCE}:\n{response_string(cmd, responses)}")
-    else:
-        print(f"At time '{time_rx}' received from {SOURCE}:\nMalformed Packet")
-
-
-
+##Possible solutions: function for sensors, bool, while
 
 ############## Main section for the open loop control algorithm ##############
-# The sequence of commands to run
-CMD_SEQUENCE = ['w0:36', 'r0:90', 'w0:36', 'r0:90', 'w0:12', 'r0:-90', 'w0:24', 'r0:-90', 'w0:6', 'r0:720']
 LOOP_PAUSE_TIME = 1 # seconds
-#LOOP_PAUSE_TIME = 0.25 # seconds
-
 # Main loop
-RUN_DEAD_RECKONING = True # If true, run this. If false, skip it
-ct = 0
-while RUN_DEAD_RECKONING:
+RUNNING = True # If true, run this. If false, skip it
+CMD_LIST = ['w0:1', 'r0:30', 'r0:-30']
+
+while RUNNING:
     # Pause for a little while so as to not spam commands insanely fast
     time.sleep(LOOP_PAUSE_TIME)
 
-    # If the command sequence hasn't been completed yet
-    if ct < len(CMD_SEQUENCE):
+    #Obtain the sensor readings from each UR sensor
+    transmit(packetize('u0'))
+    [responses, time_rx] = receive()
+    print(f"Ultrasonic 0 reading: {response_string('u0',responses)}")
+    sensor_front_1 = float(responses[0][1])
+    
+    transmit(packetize('u1'))
+    [responses, time_rx] = receive()
+    print(f"Ultrasonic 1 reading: {response_string('u1',responses)}")
+    sensor_right = float(responses[0][1])
+    
+    transmit(packetize('u2'))
+    [responses, time_rx] = receive()
+    print(f"Ultrasonic 2 reading: {response_string('u2',responses)}")
+    sensor_left = float(responses[0][1])
+    
+    transmit(packetize('u3'))
+    [responses, time_rx] = receive()
+    print(f"Ultrasonic 3 reading: {response_string('u3',responses)}")
+    sensor_front_2 = float(responses[0][1])
 
-        # Check an ultrasonic sensor 'u0'
-        packet_tx = packetize('u0')
-        if packet_tx:
-            transmit(packet_tx)
-            [responses, time_rx] = receive()
-            print(responses[0][1])
-            distance_u0 = float(responses[0][1])
-            print(f"Ultrasonic 0 reading: {response_string('u0',responses)}")
-            if distance_u0  <= 2:
-                print("Obstacle detected by u0! Stopping the rover.")
-                break # Stop the loop if an obstacle is detected
-            
-        # Check an ultrasonic sensor 'u1'
-        packet_tx = packetize('u1')
-        if packet_tx:
-            transmit(packet_tx)
-            [responses, time_rx] = receive()
-            print(responses[0][1])
-            distance_u1 = float(responses[0][1])
-            print(f"Ultrasonic 1 reading: {response_string('u1',responses)}")
-            if distance_u1 <= 2:
-                print("Obstacle detected by u1! Stopping the rover.")
-                break
+    #Initially move the rover forward if the path is clear (greater than 10 inches)
+    #Also check if the left and right sensors are not too close to obstacles (greater than 3 inches)
+    if (sensor_front_1 and sensor_front_2) > 10 and (sensor_right > 3) and (sensor_left > 3):
+        transmit(packetize(CMD_LIST[0]))
+        [responses, time_rx] = receive()
+        print(f"Drive command response: {response_string('w0:1',responses)}")
 
-        # Check an ultrasonic sensor 'u2'
-        packet_tx = packetize('u2')
-        if packet_tx:
-            transmit(packet_tx)
-            [responses, time_rx] = receive()
-            print(responses[0][1])
-            distance_u2 = float(responses[0][1])
-            print(f"Ultrasonic 2 reading: {response_string('u2',responses)}")
-            if distance_u2 <= 2:
-                packet_tx_stop = packetize('xx')  # Stop the rover
-                transmit(packet_tx_stop)
-                print("Obstacle detected by u2! Stopping the rover.")
-                break
-            
-        # Check an ultrasonic sensor 'u3'
-        packet_tx = packetize('u3')
-        if packet_tx:
-            transmit(packet_tx)
-            [responses, time_rx] = receive()
-            print(responses[0][1])
-            distance_u3 = float(responses[0][1]) 
-            print(f"Ultrasonic 3 reading: {response_string('u3',responses)}")
-            if distance_u3 <= 2:
-                print("Obstacle detected by u3! Stopping the rover.")
-                break
+    #If the sensor on the left if greater than the one on the right then rotate to the left
+    #Also rotates to the left if the right sensor is too close to an obstacle (less than 3 inches)
+    elif (sensor_left > sensor_right) or sensor_right < 3:
+        transmit(packetize(CMD_LIST[2]))  # Rotate left
+        time.sleep(LOOP_PAUSE_TIME)  
+        transmit(packetize(CMD_LIST[0])) # Move forward after rotation
+        [responses, time_rx] = receive()
+        print(f"Drive command response: {response_string('w0:1',responses)}")
 
-        # Check the remaining three sensors: gyroscope, compass, and IR
-        packet_tx = packetize('g0,c0,i0')
-        if packet_tx:
-            transmit(packet_tx)
-            [responses, time_rx] = receive()
-            print(f"Other sensor readings:\n{response_string('g0,c0,i0',responses)}")
-
-        # Send a drive command
-        packet_tx = packetize(CMD_SEQUENCE[ct])
-        if packet_tx:
-            transmit(packet_tx)
-            [responses, time_rx] = receive()
-            print(f"Drive command response: {response_string(CMD_SEQUENCE[ct],responses)}")
-
-        # If we receive a drive response indicating the command was accepted,
-        # move to the next command in the sequence
-        if responses[0]:
-            if responses[0][1] == 'True':
-                ct += 1
-
-    # If the command sequence is complete, finish the program
-    else:
-        RUN_DEAD_RECKONING = False
-        print("Sequence complete!")
+    #If the sensor on the right if greater than the one on the left then rotate to the right
+    #Also rotates to the right if the left sensor is too close to an obstacle (less than 3 inches)
+    elif sensor_right > sensor_left or sensor_left < 3:
+        transmit(packetize(CMD_LIST[1]))  # Rotate right
+        time.sleep(LOOP_PAUSE_TIME) 
+        transmit(packetize(CMD_LIST[0])) # Move forward after rotation
+        [responses, time_rx] = receive()
+        print(f"Drive command response: {response_string('w0:1',responses)}")

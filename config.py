@@ -146,8 +146,8 @@ w0_info = {
     'ang_velocity': 0,
     'motors': [motors['m0'], motors['m1']],
     'motor_direction': [1, 1],
-    'bias': {'x': 0, 'y': 0, 'rotation': -0.15}
-    #'error': {'x': 0.02, 'y': 0.05, 'rotation': 1}
+    'bias': {'x': 0, 'y': 0, 'rotation': 0.2},
+    'error': {'x': 0.02, 'y': 0.05, 'rotation': 1}
     #'error': {'x': 0, 'y': 0, 'rotation': 0}
 }
 
@@ -176,8 +176,8 @@ r0_info = {
     #'motors': [motors['m0'], motors['m1'], motors['m2'], motors['m3']],
     #'motor_direction': [1, -1, 1, -1],
     'motor_direction': [1, -1],
-    'bias': {'x': 0, 'y': 0, 'rotation': 0.5}
-    #'error': {'x': 0.003, 'y': 0.003, 'rotation': 0.02}
+    'bias': {'x': 0, 'y': 0, 'rotation': 0.01},
+    'error': {'x': 0.003, 'y': 0.003, 'rotation': 0.02}
     #'error': {'x': 0, 'y': 0, 'rotation': 0}
 }
 
@@ -188,13 +188,14 @@ drives = {
 }
 
 # Sensors
-#Front sensor
+#Front sensor 1
 u0_info = {
     'id': 'u0',
-    'position': [0, 2.5],
+    # 'position': [0, 2.5],
+    'position': [-1.25, 2.5],
     'height': 1,
     'rotation': 0,
-    #'error': 0.02,
+    'error': 0.02,
     'outline': [
         pm.Vector2(-1, -0.5),
         pm.Vector2(-1, 0.5),
@@ -211,7 +212,7 @@ u1_info = {
     'position': [-2.5, 0],
     'height': 1,
     'rotation': 90,
-    #'error': 0.02,
+    'error': 0.02,
     'outline': [
         pm.Vector2(-1, -0.5),
         pm.Vector2(-1, 0.5),
@@ -228,7 +229,7 @@ u2_info = {
     'position': [2.5, 0],
     'height': 1,
     'rotation': -90,
-    #'error': 0.02,
+    'error': 0.02,
     'outline': [
         pm.Vector2(-1, -0.5),
         pm.Vector2(-1, 0.5),
@@ -239,13 +240,15 @@ u2_info = {
     'visible_measurement': True
 }
 
-#Rear sensor
+#Front sensor 2
 u3_info = {
     'id': 'u3',
-    'position': [0, -2.5],
+    # 'position': [0, -2.5],
+    'position': [1.25, 2.5],
     'height': 1,
-    'rotation': 180,
-    #'error': 0.02,
+    # 'rotation': 180,
+    'rotation': 0,
+    'error': 0.02,
     'outline': [
         pm.Vector2(-1, -0.5),
         pm.Vector2(-1, 0.5),
