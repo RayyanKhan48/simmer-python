@@ -237,9 +237,13 @@ else:
 
 
 
+def get_sensor_reading(sensor):
+    transmit(packetize(sensor))
+    [responses, time_rx] = receive()
+    return float(responses[0][1])
 
 ############## Main section for the communication client ##############
-RUN_COMMUNICATION_CLIENT = False # If true, run this. If false, skip it
+RUN_COMMUNICATION_CLIENT = True # If true, run this. If false, skip it
 while RUN_COMMUNICATION_CLIENT:
     # Input a command
     cmd = input('Type in a string to send: ')
@@ -252,7 +256,16 @@ while RUN_COMMUNICATION_CLIENT:
     # Receive the response
     [responses, time_rx] = receive()
     if responses[0]:
-        print(f"At time '{time_rx}' received from {SOURCE}:\n{response_string(cmd, responses)}")
+        if cmd == "sensor":
+            sensor_front = get_sensor_reading('u0')
+            sensor_left = get_sensor_reading('u2')
+            sensor_right = get_sensor_reading('u1')
+            sensor_back = get_sensor_reading('u3')
+            print(f"......F:{sensor_front}......")
+            print(f"..L:{sensor_left}..R:{sensor_right}")
+            print(f"......B:{sensor_back}......")
+        else:
+            print(f"At time '{time_rx}' received from {SOURCE}:\n{response_string(cmd, responses)}")
     else:
         print(f"At time '{time_rx}' received from {SOURCE}:\nMalformed Packet")
 
@@ -266,7 +279,7 @@ LOOP_PAUSE_TIME = 1 # seconds
 #LOOP_PAUSE_TIME = 0.25 # seconds
 
 # Main loop
-RUN_DEAD_RECKONING = True # If true, run this. If false, skip it
+RUN_DEAD_RECKONING = False # If true, run this. If false, skip it
 ct = 0
 while RUN_DEAD_RECKONING:
     # Pause for a little while so as to not spam commands insanely fast

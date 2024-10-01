@@ -251,9 +251,25 @@ while RUNNING:
 
     #Obtain the sensor readings from each UR sensor
     transmit(packetize('u0'))
+    time.sleep(LOOP_PAUSE_TIME)
     [responses, time_rx] = receive()
+    print(responses[0][1])
     print(f"Ultrasonic 0 reading: {response_string('u0',responses)}")
     sensor_front_1 = float(responses[0][1])
+    
+    transmit(packetize('i0'))
+    time.sleep(LOOP_PAUSE_TIME)
+    [responses, time_rx] = receive()
+    print(responses[0][1])
+    print(f"IR sensor reading: {response_string('i0',responses)}")
+    #ir_sensor = float(responses[0][1])
+    
+    transmit(packetize('c0'))
+    time.sleep(LOOP_PAUSE_TIME)
+    [responses, time_rx] = receive()
+    print(responses)
+    print(f"Compass reading: {response_string('c0',responses)}")
+    compass = float(responses[0][1])
     
     transmit(packetize('u1'))
     [responses, time_rx] = receive()

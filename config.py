@@ -114,8 +114,8 @@ m2_info = {
     'id': 'm0',
     'position': [0, 2],
     'rotation': 90,
-    'visible': True,
-    #'visible': False,
+    #'visible': True,
+    'visible': False,
     'color': (128, 0, 0)
 }
 
@@ -123,16 +123,16 @@ m3_info = {
     'id': 'm0',
     'position': [0, -2],
     'rotation': 90,
-    'visible': True,
-    #'visible': False,
+    #'visible': True,
+    'visible': False,
     'color': (0, 0, 128)
 }
 
 motors = {
     'm0': MotorSimple(m0_info),
-    'm1': MotorSimple(m1_info)
-    #'m2': MotorSimple(m2_info),
-    #'m3': MotorSimple(m3_info)
+    'm1': MotorSimple(m1_info),
+    'm2': MotorSimple(m2_info),
+    'm3': MotorSimple(m3_info)
 }
 
 # Drives
@@ -144,8 +144,9 @@ w0_info = {
     'velocity': [0, 6],
     #'velocity': [0, 4],
     'ang_velocity': 0,
-    'motors': [motors['m0'], motors['m1']],
-    'motor_direction': [1, 1],
+    #'motors': [motors['m0'], motors['m1']],
+    'motors': [motors['m0'], motors['m1'], motors['m2'], motors['m3']],
+    'motor_direction': [1, 1, 1, 1],
     'bias': {'x': 0, 'y': 0, 'rotation': 0.2},
     'error': {'x': 0.02, 'y': 0.05, 'rotation': 1}
     #'error': {'x': 0, 'y': 0, 'rotation': 0}
@@ -172,10 +173,10 @@ r0_info = {
     'velocity': [0, 0],
     'ang_velocity': 120,
     #'ang_velocity': 60,
-    'motors': [motors['m0'], motors['m1']],
-    #'motors': [motors['m0'], motors['m1'], motors['m2'], motors['m3']],
-    #'motor_direction': [1, -1, 1, -1],
-    'motor_direction': [1, -1],
+    #'motors': [motors['m0'], motors['m1']],
+    'motors': [motors['m0'], motors['m1'], motors['m2'], motors['m3']],
+    'motor_direction': [1, -1, 1, -1],
+    #'motor_direction': [1, -1],
     'bias': {'x': 0, 'y': 0, 'rotation': 0.01},
     'error': {'x': 0.003, 'y': 0.003, 'rotation': 0.02}
     #'error': {'x': 0, 'y': 0, 'rotation': 0}
@@ -188,11 +189,11 @@ drives = {
 }
 
 # Sensors
-#Front sensor 1
+#Front sensor 1/ Front sensor
 u0_info = {
     'id': 'u0',
-    # 'position': [0, 2.5],
-    'position': [-1.25, 2.5],
+    'position': [0, 2.5],
+    #'position': [-1.25, 2.5],
     'height': 1,
     'rotation': 0,
     'error': 0.02,
@@ -240,14 +241,14 @@ u2_info = {
     'visible_measurement': True
 }
 
-#Front sensor 2
+#Front sensor 2/ Rear sensor
 u3_info = {
     'id': 'u3',
-    # 'position': [0, -2.5],
-    'position': [1.25, 2.5],
+    'position': [0, -2.5],
+    #'position': [1.25, 2.5],
     'height': 1,
-    # 'rotation': 180,
-    'rotation': 0,
+    'rotation': 180,
+    #'rotation': 0,
     'error': 0.02,
     'outline': [
         pm.Vector2(-1, -0.5),
@@ -274,7 +275,7 @@ c0_info = {
     'rotation': 0,
     'error': 0.02,
     'bias': 0.1,
-    'visible': False
+    'visible': True
 }
 
 i0_info = {
